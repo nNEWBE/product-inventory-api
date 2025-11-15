@@ -19,7 +19,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    public ResponseEntity<Response<?>> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
         log.error("Validation failed: {}", ex.getMessage());
 
         Map<String, String> errors = new LinkedHashMap<>();
@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
             errors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
 
-        ErrorResponse body = ErrorResponse.builder()
+        Response<?> body = Response.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
@@ -39,10 +39,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(ProductNotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<Response<?>> handleNotFound(ProductNotFoundException ex, HttpServletRequest request) {
         log.warn("Failed to find resource: {}", ex.getMessage());
         log.error("Product not found exception", ex);
-        ErrorResponse body = ErrorResponse.builder()
+        Response<?> body = Response.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.NOT_FOUND.value())
                 .error(HttpStatus.NOT_FOUND.getReasonPhrase())
@@ -53,10 +53,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidSkuFormatException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidSku(InvalidSkuFormatException ex, HttpServletRequest request) {
+    public ResponseEntity<Response<?>> handleInvalidSku(InvalidSkuFormatException ex, HttpServletRequest request) {
         log.warn("Invalid SKU format: {}", ex.getMessage());
         log.error("Invalid SKU exception", ex);
-        ErrorResponse body = ErrorResponse.builder()
+        Response<?> body = Response.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
@@ -67,10 +67,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(SkuAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateSku(SkuAlreadyExistsException ex, HttpServletRequest request) {
+    public ResponseEntity<Response<?>> handleDuplicateSku(SkuAlreadyExistsException ex, HttpServletRequest request) {
         log.warn("Duplicate SKU: {}", ex.getMessage());
         log.error("Duplicate SKU exception", ex);
-        ErrorResponse body = ErrorResponse.builder()
+        Response<?> body = Response.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.CONFLICT.value())
                 .error(HttpStatus.CONFLICT.getReasonPhrase())
@@ -81,9 +81,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+    public ResponseEntity<Response<?>> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
         log.warn("Bad request: {}", ex.getMessage());
-        ErrorResponse body = ErrorResponse.builder()
+        Response<?> body = Response.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
@@ -94,9 +94,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<Response<?>> handleNoResourceFound(NoResourceFoundException ex, HttpServletRequest request) {
         log.warn("No resource found for path {}: {}", request.getRequestURI(), ex.getMessage());
-        ErrorResponse body = ErrorResponse.builder()
+        Response<?> body = Response.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.NOT_FOUND.value())
                 .error(HttpStatus.NOT_FOUND.getReasonPhrase())
@@ -107,9 +107,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<Response<?>> handleGeneric(Exception ex, HttpServletRequest request) {
         log.error("Unhandled exception", ex);
-        ErrorResponse body = ErrorResponse.builder()
+        Response<?> body = Response.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
