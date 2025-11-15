@@ -65,20 +65,44 @@ public class ProductService {
             return new ProductNotFoundException(id);
         });
 
-        // SKU cannot be changed
         if (updated.getSku() != null && !updated.getSku().equals(existing.getSku())) {
             log.warn("Attempt to change immutable SKU from {} to {} for product ID {}", existing.getSku(), updated.getSku(), id);
             throw new InvalidSkuFormatException("SKU change is not allowed from " + existing.getSku() + " to " + updated.getSku());
         }
 
-        // Validate SKU still correct format
         validateSkuFormat(existing.getSku());
 
-        existing.setName(updated.getName());
-        existing.setDescription(updated.getDescription());
-        existing.setPrice(updated.getPrice());
-        existing.setQuantity(updated.getQuantity());
-        existing.setStatus(updated.getStatus());
+        if (updated.getName() != null) {
+            String name = updated.getName();
+            if (name.isBlank()) {
+                throw new IllegalArgumentException("Product name must not be blank");
+            }
+            existing.setName(name);
+        }
+        if (updated.getDescription() != null) {
+            String description = updated.getDescription();
+            if (description.length() > 500) {
+                throw new IllegalArgumentException("Description must not exceed 500 characters");
+            }
+            existing.setDescription(description);
+        }
+        if (updated.getPrice() != null) {
+            Double price = updated.getPrice();
+            if (price <= 0) {
+                throw new IllegalArgumentException("Price must be a positive number");
+            }
+            existing.setPrice(price);
+        }
+        if (updated.getQuantity() != null) {
+            Integer qty = updated.getQuantity();
+            if (qty < 0) {
+                throw new IllegalArgumentException("Quantity must be zero or more");
+            }
+            existing.setQuantity(qty);
+        }
+        if (updated.getStatus() != null) {
+            existing.setStatus(updated.getStatus());
+        }
 
         Product saved = repository.save(existing);
         log.info("Product updated with ID: {}", saved.getId());

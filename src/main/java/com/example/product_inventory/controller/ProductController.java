@@ -45,7 +45,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> update(@PathVariable Long id, @Valid @RequestBody Product update) {
+    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product update) {
         log.debug("Received request to update product ID {} with payload: {}", id, update);
         Product updated = service.update(id, update);
         log.info("Product updated with ID: {}", id);
